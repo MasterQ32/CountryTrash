@@ -1,27 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <model>
 	<mesh>
-		<diffuse>/example</diffuse>
+		<diffuse>/Textures/example</diffuse>
 		<index-base>0</index-base>
 		<index-count>6</index-count>
 	</mesh>
 	<vertices>
 		<vertex>
 			<position>
-				<X>-0.5</X>
-				<Y>0</Y>
-				<Z>-0.5</Z>
-			</position>
-			<uv>
 				<X>0</X>
 				<Y>0</Y>
-			</uv>
-		</vertex>
-		<vertex>
-			<position>
-				<X>-0.5</X>
-				<Y>0</Y>
-				<Z>0.5</Z>
+				<Z>0</Z>
 			</position>
 			<uv>
 				<X>0</X>
@@ -30,24 +19,35 @@
 		</vertex>
 		<vertex>
 			<position>
-				<X>0.5</X>
-				<Y>0</Y>
-				<Z>-0.5</Z>
+				<X>0</X>
+				<Y>1</Y>
+				<Z>0</Z>
 			</position>
 			<uv>
-				<X>1</X>
+				<X>0</X>
 				<Y>0</Y>
 			</uv>
 		</vertex>
 		<vertex>
 			<position>
-				<X>0.5</X>
+				<X>1</X>
 				<Y>0</Y>
-				<Z>0.5</Z>
+				<Z>0</Z>
 			</position>
 			<uv>
 				<X>1</X>
 				<Y>1</Y>
+			</uv>
+		</vertex>
+		<vertex>
+			<position>
+				<X>1</X>
+				<Y>1</Y>
+				<Z>0</Z>
+			</position>
+			<uv>
+				<X>1</X>
+				<Y>0</Y>
 			</uv>
 		</vertex>
 	</vertices>

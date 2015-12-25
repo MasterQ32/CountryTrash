@@ -22,7 +22,13 @@ namespace HarvestBoon.Graphics
 			get
 			{
 				if (this.uniforms.ContainsKey(uniformName) == false)
-					this.uniforms.Add(uniformName, GL.GetUniformLocation(this.ID, uniformName));
+				{
+					var loc = GL.GetUniformLocation(this.ID, uniformName);
+					if (loc == -1)
+						Console.WriteLine("[Graphics] The uniform '{0}' was not found.", uniformName);
+					this.uniforms.Add(uniformName, loc);
+				}
+
 				return this.uniforms[uniformName];
 			}
 		}

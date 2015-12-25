@@ -14,12 +14,15 @@ namespace HarvestBoon
 		Matrix4 matViewProjection;
 		ShaderProgram shader;
 		Map map;
+		UserInterface ui;
 
 		Entity helper, player;
 
 		public MapDisplayState(Network network)
 		{
 			this.network = network;
+
+			this.ui = new UserInterface();
 
 			this.map = new Map(0, 10, 10);
 			for (int x = 0; x < this.map.SizeX; x++)
@@ -31,7 +34,7 @@ namespace HarvestBoon
 						X = x,
 						Z = z,
 						Height = 0.1f * Math.Max(x, z),
-						Model = "/tile"
+						Model = "/Models/tile"
 					};
 				}
 			}
@@ -41,14 +44,16 @@ namespace HarvestBoon
 		{
 			this.shader = this.Resources.Get<ShaderProgram>("/Shaders/model");
 
+			this.ui.Add(new Widget() { Position = new Vector2(50, 50) });
+
 			this.helper = new Entity()
 			{
-				Model = this.Resources.Get<Model>("/selector")
+				Model = this.Resources.Get<Model>("/Models/selector")
 			};
 
 			this.player = new Entity()
 			{
-				Model = this.Resources.Get<Model>("/quad"),
+				Model = this.Resources.Get<Model>("/Models/quad"),
 				Position = new Vector3(0.0f, 0.6f, 0)
 			};
 			this.map.AddEntity(this.player);
@@ -80,6 +85,7 @@ namespace HarvestBoon
 		protected override void OnRenderFrame(float dt)
 		{
 			GL.Enable(EnableCap.DepthTest);
+			GL.Disable(EnableCap.Blend);
 			GL.ClearColor(0.2f, 0.2f, 0.9f, 1.0f);
 			GL.ClearDepth(1.0f);
 			GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
@@ -99,6 +105,15 @@ namespace HarvestBoon
 				this.shader,
 				this.matViewProjection,
 				new[] { this.helper });
+
+			// GL.Enable(EnableCap.Blend);
+			GL.Disable(EnableCap.DepthTest);
+			// GL.Clear(ClearBufferMask.DepthBufferBit);
+			// GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+			RenderTools.RenderUI(
+				this.Resources,
+				this.WindowSize.X, this.WindowSize.Y,
+				this.ui);
 		}
 	}
 }

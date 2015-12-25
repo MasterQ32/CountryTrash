@@ -12,6 +12,45 @@ namespace HarvestBoon.Graphics
 	/// </summary>
 	public static class RenderTools
 	{
+		public static string UIShader { get; set; } = "/Shaders/ui";
+		public static string UISprite { get; set; } = "/Models/widget";
+
+		public static void RenderUI(
+			ResourceManager resources,
+			float screenWidth, float screenHeight,
+			IEnumerable<IUserInterfaceSprite> elements)
+		{
+			var transformScreen = Matrix4.CreateOrthographicOffCenter(
+				0.0f, screenWidth - 1.0f,
+  				-(screenHeight - 1.0f), 0.0f,
+				0.0f, 1.0f);
+
+			var shader = resources.Get<ShaderProgram>(UIShader);
+			shader.Bind();
+			GL.Uniform1(shader["texInterface"], 0);
+			GL.UniformMatrix4(shader["matScreen"], false, ref transformScreen);
+
+			var model = resources.Get<Model>(UISprite);
+
+			foreach (var element in elements)
+			{
+				var transformModel =
+					Matrix4.CreateScale(element.Size.X, -element.Size.Y, 1.0f) *
+					Matrix4.CreateTranslation(element.Position.X, -element.Position.Y, 0);
+
+				GL.UniformMatrix4(shader["matModel"], false, ref transformModel);
+				
+				GL.ActiveTexture(TextureUnit.Texture0);
+				var texture = resources.Get<Texture2D>(element.Texture);
+				texture.Bind();
+
+				foreach (var mesh in model.Meshes)
+				{
+					model.DrawMesh(mesh);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Renders a scene of objects with the given shader.
 		/// </summary>

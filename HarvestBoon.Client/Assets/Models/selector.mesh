@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <model>
 	<mesh>
-		<diffuse>/selection</diffuse>
+		<diffuse>/Textures/selection</diffuse>
 		<index-base>0</index-base>
 		<index-count>6</index-count>
 	</mesh>

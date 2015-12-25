@@ -54,6 +54,7 @@
     <Compile Include="ILoadableResource.cs" />
     <Compile Include="ISaveableResource.cs" />
     <Compile Include="ISceneObject.cs" />
+    <Compile Include="IUserInterfaceSprite.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Picking.cs" />

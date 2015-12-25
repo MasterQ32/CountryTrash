@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <model xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <mesh>
-    <diffuse>/grass</diffuse>
+    <diffuse>/Textures/grass</diffuse>
     <index-base>0</index-base>
     <index-count>60</index-count>
   </mesh>
