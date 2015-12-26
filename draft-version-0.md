@@ -1,4 +1,4 @@
-# Harvest Boon
+# Country Trash
 
 ## Grundgedanke
 
