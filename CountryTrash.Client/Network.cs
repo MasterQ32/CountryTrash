@@ -4,21 +4,28 @@ using System;
 
 namespace CountryTrash
 {
-	internal class Network
+	/// <summary>
+	/// Client network
+	/// </summary>
+	internal partial class Network
 	{
 		private static readonly NetPeerConfiguration peerConfig = new NetPeerConfiguration("CountryTrash")
 		{
-			Port = 1025
+
 		};
 		private readonly NetClient client;
 
 		public NetConnectionStatus Status { get; private set; }
+		public NetCommands Commands { get; private set; }
+		public NetEvents Events { get; private set; }
 
 		public Network(string hostName)
 		{
 			this.client = new NetClient(peerConfig);
 			this.client.Start();
-			this.client.Connect(hostName, peerConfig.Port);
+			this.client.Connect(hostName, 1025);
+			this.Commands = new NetCommands(this);
+			this.Events = new NetEvents(this);
 		}
 
 		public void ReceiveMessages()
@@ -38,8 +45,7 @@ namespace CountryTrash
 					}
 					case NetIncomingMessageType.Data:
 					{
-						msg.LengthBytes.Log("Received {0} bytes of data.", "Network");
-						this.DecodeMessage(msg);
+						this.Events.Dispatch(msg);
 						break;
 					}
 					default:
@@ -49,24 +55,17 @@ namespace CountryTrash
 					}
 				}
 			}
-		}
-
-		private void DecodeMessage(NetIncomingMessage msg)
-		{
-			var cmd = (ServerToClientNetworkCommand)msg.ReadByte();
-			switch (cmd)
-			{
-				default:
-				{
-					cmd.Log("Unhandled command type: {0}", "Network");
-					break;
-				}
-			}
+			this.client.Recycle(list);
 		}
 
 		public void SendMessages()
 		{
 			this.client.FlushSendQueue();
+		}
+		
+		public void Disconnect()
+		{
+			this.client.Disconnect("bye!");
 		}
 	}
 }

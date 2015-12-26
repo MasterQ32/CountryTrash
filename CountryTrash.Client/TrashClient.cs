@@ -25,6 +25,8 @@ namespace CountryTrash
 			config.PostUpdateLoop += (s, e) => network.SendMessages();
 
 			Game.Start(config);
+
+			network.Disconnect();
 		}
 	}
 }

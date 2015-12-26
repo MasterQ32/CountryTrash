@@ -51,6 +51,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventArgs.cs" />
+    <Compile Include="AuthenticationState.cs" />
+    <Compile Include="NetEvents.cs" />
+    <Compile Include="NetworkCommands.cs" />
     <Compile Include="TrashClient.cs" />
     <Compile Include="ConnectingToServerState.cs" />
     <Compile Include="Entity.cs" />

@@ -16,11 +16,13 @@ namespace CountryTrash
 		Map map;
 		UserInterface ui;
 
-		Entity helper, player;
+		Entity helper;
 
 		public MapDisplayState(Network network)
 		{
 			this.network = network;
+			this.network.Events.CreateMap += CreateMap;
+			this.network.Events.SetTile += SetTile;
 
 			this.ui = new UserInterface();
 
@@ -40,6 +42,23 @@ namespace CountryTrash
 			}
 		}
 
+		private void SetTile(object sender, SetTileEventArgs e)
+		{
+			this.map[e.X, e.Z] = new Tile()
+			{
+				X = e.X,
+				Z = e.Z,
+				Height = e.Height,
+				Model = e.Model,
+				IsInteractive = e.IsInteractive
+			};
+		}
+
+		private void CreateMap(object sender, CreateMapEventArgs e)
+		{
+			this.map = new Map(e.ID, e.SizeX, e.SizeZ);
+		}
+
 		protected override void OnLoad()
 		{
 			this.shader = this.Resources.Get<ShaderProgram>("/Shaders/model");
@@ -50,13 +69,6 @@ namespace CountryTrash
 			{
 				Model = this.Resources.Get<Model>("/Models/selector")
 			};
-
-			this.player = new Entity()
-			{
-				Model = this.Resources.Get<Model>("/Models/quad"),
-				Position = new Vector3(0.0f, 0.6f, 0)
-			};
-			this.map.AddEntity(this.player);
 		}
 
 		protected override void OnUpdateFrame(float dt)

@@ -16,14 +16,11 @@
 		Authenticate,
 
 		/// <summary>
-		/// Tells the server the player wants to walk to a specific tile
-		/// position on the current map.
-		/// </summary>
-		WalkTo,
-
-		/// <summary>
 		/// Tells the server the player wants to invoke an action on a
 		/// specific tile on the current map.
+		/// 
+		/// If the tile has no specific action, the players character will
+		/// walk to the tile if possible.
 		/// </summary>
 		InvokeTileAction,
 
