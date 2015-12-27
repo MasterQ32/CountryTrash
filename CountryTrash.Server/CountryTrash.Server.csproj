@@ -56,6 +56,7 @@
     <Compile Include="Entity.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="ClientEvents.cs" />
+    <Compile Include="IUpdateable.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="NetworkCommands.cs" />
     <Compile Include="Network.cs" />

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace CountryTrash
 {
-	public sealed class Map : IMap, IEnumerable<ITile>
+	public sealed class Map : IMap, IEnumerable<ITile>, IUpdateable
 	{
 		private readonly int id;
 		private readonly ITile[,] tiles;
@@ -18,6 +18,41 @@ namespace CountryTrash
 			this.id = id;
 			this.tiles = new ITile[sizeX, sizeZ];
 			this.entities = new HashSet<IEntity>();
+		}
+
+		public void Update(float dt)
+		{
+			foreach(var tile in this.OfType<IUpdateable>())
+			{
+				tile.Update(dt);
+			}
+			foreach (var entity in this.Entities.OfType<IUpdateable>())
+			{
+				entity.Update(dt);
+			}
+		}
+
+		public ITile[] FindPath(int startX, int startZ, int endX, int endZ)
+		{
+			if ((startX == endX) && (startZ == endZ))
+				return new ITile[0];
+
+			// TODO: Implement correct pathfinding :P
+			var path = new List<ITile>();
+
+			for(int x = startX; x != endX; x += Math.Sign(endX - startX))
+			{
+				path.Add(this[x, startZ]);
+			}
+			path.Add(this[endX, startZ]);
+
+			for (int z = startZ; z != endZ; z += Math.Sign(endZ - startZ))
+			{
+				path.Add(this[endX, z]);
+			}
+			path.Add(this[endX, endZ]);
+
+			return path.ToArray();
 		}
 
 		public ITile this[int x, int z]

@@ -2,6 +2,7 @@
 using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace CountryTrash
 
 		private readonly Dictionary<int, Map> maps = new Dictionary<int, Map>()
 		{
-			{ 1, new Map(1, 4, 4) }
+			{ 1, new Map(1, 6, 6) }
 		};
 
 		private readonly HashSet<Player> players = new HashSet<Player>();
@@ -40,9 +41,18 @@ namespace CountryTrash
 						};
 					}
 				}
+				map[1, 1] = null;
+				map[1, 2] = null;
+				map[2, 1] = null;
+				map[4, 1] = null;
+				map[4, 4] = null;
+				map[1, 4] = null;
+				map[3, 4] = null;
+				map[4, 3] = null;
+
 				map.AddEntity(new Entity()
 				{
-					Position = new Vector3(1.5f, 0.2f, 1.5f),
+					Position = new Vector3(6.5f, 0.2f, 6.5f),
 					Rotation = MathHelper.DegreesToRadians(45.0f),
 					Visualization = "/Models/quad"
 				});
@@ -63,17 +73,24 @@ namespace CountryTrash
 				e.Client.Events.Authenticate -= AuthenticateClient;
 			};
 
+			var watch = Stopwatch.StartNew();
+			var rate = 1.0f / 30.0f; // Server runs with 30 FPS
 			while (true)
 			{
+				watch.Reset();
 				network.ReceiveMessages();
 
 				this.SpawnClients();
-
-				// TODO: Add game logic here
+				
+				foreach(var map in this.maps.Values)
+				{
+					map.Update(rate);
+				}
 
 				network.SendMessages();
 
-				Thread.Sleep(1);
+				int time = (int)Math.Max(0, 1000 * rate - watch.ElapsedMilliseconds);
+				Thread.Sleep(time);
 			}
 		}
 

@@ -35,7 +35,7 @@ namespace CountryTrash
 			}
 			else
 			{
-				this.entity.Teleport(e.X, e.Z);
+				this.entity.WalkTo(e.X, e.Z);
 			}
 		}
 
