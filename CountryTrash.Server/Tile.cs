@@ -20,6 +20,7 @@ namespace CountryTrash
 		public bool IsInteractive { get; set; }
 
 		public string Model { get; set; }
+		public string Topping { get; set; }
 
 		public int X => this.x;
 

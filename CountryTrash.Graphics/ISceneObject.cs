@@ -14,4 +14,12 @@ namespace CountryTrash.Graphics
 
 		float Rotation { get; }
 	}
+
+	/// <summary>
+	/// An abstract scene node that contains multiple objects.
+	/// </summary>
+	public interface ISceneNode
+	{
+		IEnumerable<ISceneObject> Children { get; }
+	}
 }

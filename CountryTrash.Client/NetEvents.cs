@@ -1,4 +1,5 @@
 ﻿using Lidgren.Network;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 
@@ -28,7 +29,8 @@ namespace CountryTrash
 					{ ServerToClientNetworkCommand.CreateMap, OnCreateMap },
 					{ ServerToClientNetworkCommand.CreateEntity, OnCreateEntity },
 					{ ServerToClientNetworkCommand.SetTile, OnSetTile },
-					{ServerToClientNetworkCommand.UpdateEntity, OnUpdateEntity }
+					{ServerToClientNetworkCommand.UpdateEntity, OnUpdateEntity },
+					{ServerToClientNetworkCommand.DestroyEntity, OnDestroyEntity }
 				};
 			}
 
@@ -62,15 +64,23 @@ namespace CountryTrash
 					this.UpdateEntity(this.network, new NetworkEntityEventArgs(id, pos, rot, vis));
 			}
 
+			private void OnDestroyEntity(NetIncomingMessage obj)
+			{
+				var id = obj.ReadInt32();
+				if (this.DestroyEntity != null)
+					this.DestroyEntity(this.network, new NetworkEntityEventArgs(id, Vector3.Zero, 0.0f, null));
+			}
+
 			private void OnSetTile(NetIncomingMessage msg)
 			{
 				var x = msg.ReadInt32();
 				var z = msg.ReadInt32();
 				var height = msg.ReadSingle();
 				var model = msg.ReadString();
+				var topping = msg.ReadString();
 				var interactive = msg.ReadBoolean();
 				if (this.SetTile != null)
-					this.SetTile(this.network, new SetTileEventArgs(x, z, height, model, interactive));
+					this.SetTile(this.network, new SetTileEventArgs(x, z, height, model, string.IsNullOrWhiteSpace(topping) ? null :  topping, interactive));
 			}
 
 			private void OnCreateMap(NetIncomingMessage msg)

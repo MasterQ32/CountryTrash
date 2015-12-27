@@ -34,6 +34,8 @@ namespace CountryTrash.Graphics
 
 			foreach (var element in elements)
 			{
+				if (element == null)
+					continue;
 				var transformModel =
 					Matrix4.CreateScale(element.Size.X, -element.Size.Y, 1.0f) *
 					Matrix4.CreateTranslation(element.Position.X, -element.Position.Y, 0);
@@ -73,6 +75,10 @@ namespace CountryTrash.Graphics
 
 			foreach (var entity in scene)
 			{
+				if (entity== null)
+					continue;
+				if (entity.Model == null)
+					continue;
 				var transformModel =
 					Matrix4.CreateRotationY(entity.Rotation) *
 					Matrix4.CreateTranslation(entity.Position);

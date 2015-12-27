@@ -59,6 +59,7 @@ namespace CountryTrash
 				Z = e.Z,
 				Height = e.Height,
 				Model = e.Model,
+				Topping = e.Topping,
 				IsInteractive = e.IsInteractive
 			};
 		}
@@ -139,7 +140,7 @@ namespace CountryTrash
 					this.Resources,
 					this.shader,
 					this.matViewProjection,
-					this.map.OfType<ISceneObject>());
+					this.map.OfType<ISceneNode>().SelectMany(n => n.Children));
 				RenderTools.RenderScene(
 					this.Resources,
 					this.shader,

@@ -3,8 +3,20 @@ using System.Collections.Generic;
 
 namespace CountryTrash
 {
-	public class PathFinder
+	/// <summary>
+	/// Provides a utility function to search tile paths.
+	/// </summary>
+	public static class PathFinder
 	{
+		/// <summary>
+		/// Searches a path from (sx,sz) to (ex, ez) on the given map.
+		/// </summary>
+		/// <param name="map"></param>
+		/// <param name="sx"></param>
+		/// <param name="sz"></param>
+		/// <param name="ex"></param>
+		/// <param name="ez"></param>
+		/// <returns></returns>
 		public static ITile[] FindPath(Map map, int sx, int sz, int ex, int ez)
 		{
 			if ((sx == ex) && (sz == ez))
@@ -19,16 +31,16 @@ namespace CountryTrash
 			var closedList = new HashSet<Node>();
 			var openList = new Queue<Node>();
 			openList.Enqueue(new Node(map[sx, sz], null));
-			
-			while(openList.Count > 0)
+
+			while (openList.Count > 0)
 			{
 				var current = openList.Dequeue();
-				if((current.X == ex) && (current.Z == ez))
+				if ((current.X == ex) && (current.Z == ez))
 				{
 					// return path
 					var list = new List<ITile>();
 					var it = current;
-					while(it != null)
+					while (it != null)
 					{
 						list.Add(it.tile);
 						it = it.previous;
@@ -43,7 +55,7 @@ namespace CountryTrash
 					map.Get(current.X - 1, current.Z + 0),
 					map.Get(current.X + 1, current.Z + 0),
 				};
-				foreach(var neighbour in innerNodes)
+				foreach (var neighbour in innerNodes)
 				{
 					if (neighbour == null)
 						continue;
@@ -54,7 +66,7 @@ namespace CountryTrash
 						continue;
 					if (neighbour.IsBlocked)
 						continue;
-					
+
 					closedList.Add(node);
 					openList.Enqueue(node);
 				}

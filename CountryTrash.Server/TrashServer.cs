@@ -50,6 +50,13 @@ namespace CountryTrash
 				map[3, 4] = null;
 				map[4, 3] = null;
 
+				map[3, 1] = new Tile(3, 1)
+				{
+					Model = "/Models/tile",
+					Topping = "/Models/boulder",
+					IsBlocked = true
+				};
+
 				map.AddEntity(new Entity()
 				{
 					Position = new Vector3(6.5f, 0.2f, 6.5f),

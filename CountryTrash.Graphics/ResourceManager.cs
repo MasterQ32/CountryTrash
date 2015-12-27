@@ -61,6 +61,8 @@ namespace CountryTrash.Graphics
 		public T Get<T>(string resourcePath)
 			where T : Resource, ILoadableResource, new()
 		{
+			if (resourcePath == null)
+				return null;
 			var path = pathSpecifier.Match(resourcePath);
 			if (path.Success == false)
 				throw new ArgumentException("Path is not in a valid format!", "resourcePath");

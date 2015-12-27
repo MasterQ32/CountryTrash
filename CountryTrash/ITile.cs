@@ -32,6 +32,11 @@ namespace CountryTrash
 		string Model { get; }
 
 		/// <summary>
+		/// Gets the name of the topping model the tile uses.
+		/// </summary>
+		string Topping { get; }
+
+		/// <summary>
 		/// Gets if the tile is interactive and the user can click it.
 		/// </summary>
 		bool IsInteractive { get; }

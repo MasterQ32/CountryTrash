@@ -48,6 +48,7 @@ namespace CountryTrash
 				msg.Write(tile.Z);
 				msg.Write(tile.Height);
 				msg.Write(tile.Model);
+				msg.Write(tile.Topping);
 				msg.Write(tile.IsInteractive);
 				SendMessage(msg);
 			}

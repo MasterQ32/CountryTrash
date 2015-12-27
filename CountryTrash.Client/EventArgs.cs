@@ -45,15 +45,17 @@ namespace CountryTrash
 		private readonly float height;
 		private readonly bool interactive;
 		private readonly string model;
+		private readonly string topping;
 		private readonly int x;
 		private readonly int z;
 
-		public SetTileEventArgs(int x, int z, float height, string model, bool interactive)
+		public SetTileEventArgs(int x, int z, float height, string model, string topping, bool interactive)
 		{
 			this.x = x;
 			this.z = z;
 			this.height = height;
 			this.model = model;
+			this.topping = topping;
 			this.interactive = interactive;
 		}
 
@@ -61,6 +63,7 @@ namespace CountryTrash
 		public float Height => this.height;
 		public bool IsInteractive => this.interactive;
 		public string Model => this.model;
+		public string Topping => this.topping;
 		public int X => this.x;
 		public int Z => this.z;
 	}
