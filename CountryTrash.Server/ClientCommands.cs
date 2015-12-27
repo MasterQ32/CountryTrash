@@ -22,21 +22,6 @@ namespace CountryTrash
 				SendMessage(msg, true);
 			}
 
-			public void CreateEntity()
-			{
-				throw new NotImplementedException();
-			}
-
-			public void UpdateEntity()
-			{
-				throw new NotImplementedException();
-			}
-
-			public void DestroyEntity()
-			{
-				throw new NotImplementedException();
-			}
-
 			public void UpdateInventory()
 			{
 				throw new NotImplementedException();
@@ -69,7 +54,31 @@ namespace CountryTrash
 
 			public void CreateEntity(IEntity entity)
 			{
-				throw new NotImplementedException();
+				var msg = CreateMessage(ServerToClientNetworkCommand.CreateEntity);
+
+				msg.Write(entity.ID);
+				msg.Write(entity.Position);
+				msg.Write(entity.Rotation);
+				msg.Write(entity.Visualization);
+
+				SendMessage(msg);
+			}
+
+			public void UpdateEntity(IEntity entity, bool reliable)
+			{
+				var msg = CreateMessage(ServerToClientNetworkCommand.UpdateEntity);
+				msg.Write(entity.ID);
+				msg.Write(entity.Position);
+				msg.Write(entity.Rotation);
+				msg.Write(entity.Visualization);
+				SendMessage(msg, reliable);
+			}
+
+			public void DestroyEntity(IEntity entity)
+			{
+				var msg = CreateMessage(ServerToClientNetworkCommand.DestroyEntity);
+				msg.Write(entity.ID);
+				SendMessage(msg);
 			}
 
 			public void CreateMap(IMap map)

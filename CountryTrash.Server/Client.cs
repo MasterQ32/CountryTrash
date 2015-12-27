@@ -10,8 +10,6 @@ namespace CountryTrash
 
 		public ClientCommands Commands { get; private set; }
 		public ClientEvents Events { get; private set; }
-		
-		public string UserName { get; internal set; }
 
 		internal Client(NetServer server, NetConnection senderConnection)
 		{

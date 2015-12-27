@@ -1,4 +1,5 @@
 ﻿using Lidgren.Network;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,14 @@ namespace CountryTrash
 			server.Start();
 		}
 
-		private readonly Queue<Client> spawningClients = new Queue<Client>();
+		private readonly Queue<Player> spawningPlayers = new Queue<Player>();
 
 		private readonly Dictionary<int, Map> maps = new Dictionary<int, Map>()
 		{
 			{ 1, new Map(1, 4, 4) }
 		};
+
+		private readonly HashSet<Player> players = new HashSet<Player>();
 
 		private void LoadData()
 		{
@@ -37,6 +40,12 @@ namespace CountryTrash
 						};
 					}
 				}
+				map.AddEntity(new Entity()
+				{
+					Position = new Vector3(1.5f, 0.2f, 1.5f),
+					Rotation = MathHelper.DegreesToRadians(45.0f),
+					Visualization = "/Models/quad"
+				});
 			}
 		}
 
@@ -70,26 +79,16 @@ namespace CountryTrash
 
 		private void SpawnClients()
 		{
-			while (this.spawningClients.Count > 0)
+			while (this.spawningPlayers.Count > 0)
 			{
-				var client = this.spawningClients.Dequeue();
+				var player = this.spawningPlayers.Dequeue();
 
 				// TODO: Restore from database
 				int lastMap = 1;
-				int lastX = 2; /* use for spawn position, is it really needed? */
-				int lastZ = 2;
 
 				var map = this.maps[lastMap];
 
-				client.Commands.CreateMap(map);
-				foreach (var tile in map)
-				{
-					client.Commands.SetTile(tile);
-				}
-				foreach (var entity in map.Entities)
-				{
-					client.Commands.CreateEntity(entity);
-				}
+				map.AddPlayer(player);
 			}
 		}
 
@@ -111,10 +110,10 @@ namespace CountryTrash
 				client.Commands.AuthenticationResponse(true, "");
 				client.Events.Authenticate -= AuthenticateClient;
 
-				client.UserName = e.Name;
+				var player = new Player(client, e.Name);
 
 				// Add authenticated clients to the list of all clients.
-				this.spawningClients.Enqueue(client);
+				this.spawningPlayers.Enqueue(player);
 			}
 		}
 	}

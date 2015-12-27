@@ -23,23 +23,32 @@ namespace CountryTrash
 			this.network = network;
 			this.network.Events.CreateMap += CreateMap;
 			this.network.Events.SetTile += SetTile;
+			this.network.Events.CreateEntity += CreateEntity;
+			this.network.Events.UpdateEntity += UpdateEntity;
 
 			this.ui = new UserInterface();
+		}
 
-			this.map = new Map(0, 10, 10);
-			for (int x = 0; x < this.map.SizeX; x++)
+		private void CreateEntity(object sender, NetworkEntityEventArgs e)
+		{
+			var entity = new Entity()
 			{
-				for (int z = 0; z < this.map.SizeZ; z++)
-				{
-					this.map[x, z] = new Tile()
-					{
-						X = x,
-						Z = z,
-						Height = 0.1f * Math.Max(x, z),
-						Model = "/Models/tile"
-					};
-				}
-			}
+				ID = e.ID,
+				Position = e.Position,
+				Rotation = e.Rotation,
+				Visualization = e.Visualization
+			};
+			this.map.AddEntity(entity);
+		}
+
+		private void UpdateEntity(object sender, NetworkEntityEventArgs e)
+		{
+			var ent = this.map.Entities.FirstOrDefault(_ => (_.ID == e.ID));
+			if (ent == null)
+				return;
+			ent.Position = e.Position;
+			ent.Rotation = e.Rotation;
+			ent.Visualization = e.Visualization;
 		}
 
 		private void SetTile(object sender, SetTileEventArgs e)
@@ -67,14 +76,34 @@ namespace CountryTrash
 
 			this.helper = new Entity()
 			{
-				Model = this.Resources.Get<Model>("/Models/selector")
+				Visualization = "/Models/selector"
 			};
+
+			this.Mouse.ButtonDown += Mouse_ButtonDown;
+		}
+
+		private void Mouse_ButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			switch(e.Button)
+			{
+				case MouseButton.Left:
+				{
+					var pick = this.Pick(e.X, e.Y);
+					var tile = pick as Tile;
+					var entity = pick as Entity;
+					if (tile != null)
+						this.network.Commands.InvokeTileAction(tile);
+					else if (entity != null)
+						this.network.Commands.InvokeEntityAction(entity);
+					break;
+				}
+			}
 		}
 
 		protected override void OnUpdateFrame(float dt)
 		{
 			this.matViewProjection =
-				Matrix4.LookAt(new Vector3(-2, 4.5f, -2), new Vector3(5, 0, 5), Vector3.UnitY) *
+				Matrix4.LookAt(new Vector3(-2, 4.5f, -2), new Vector3(2.5f, 0, 2.5f), Vector3.UnitY) *
 				Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60), 16.0f / 9.0f, 0.1f, 10000.0f);
 
 			var picked = this.Pick(this.Mouse.X, this.Mouse.Y);
@@ -87,6 +116,8 @@ namespace CountryTrash
 
 		private IBoxCollider Pick(int mouseX, int mouseY)
 		{
+			if (this.map == null)
+				return null;
 			return Picking.Pick(
 				this.Mouse.X, this.Mouse.Y,
 				this.WindowSize.X, this.WindowSize.Y,
@@ -102,26 +133,29 @@ namespace CountryTrash
 			GL.ClearDepth(1.0f);
 			GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
 
-			RenderTools.RenderScene(
-				this.Resources,
-				this.shader,
-				this.matViewProjection,
-				this.map.OfType<ISceneObject>());
-			RenderTools.RenderScene(
-				this.Resources,
-				this.shader,
-				this.matViewProjection,
-				this.map.Entities.OfType<ISceneObject>());
+			if (this.map != null)
+			{
+				RenderTools.RenderScene(
+					this.Resources,
+					this.shader,
+					this.matViewProjection,
+					this.map.OfType<ISceneObject>());
+				RenderTools.RenderScene(
+					this.Resources,
+					this.shader,
+					this.matViewProjection,
+					this.map.Entities.OfType<ISceneObject>());
+			}
 			RenderTools.RenderScene(
 				this.Resources,
 				this.shader,
 				this.matViewProjection,
 				new[] { this.helper });
 
-			// GL.Enable(EnableCap.Blend);
+			GL.Enable(EnableCap.Blend);
 			GL.Disable(EnableCap.DepthTest);
-			// GL.Clear(ClearBufferMask.DepthBufferBit);
-			// GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+			GL.Clear(ClearBufferMask.DepthBufferBit);
+			GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 			RenderTools.RenderUI(
 				this.Resources,
 				this.WindowSize.X, this.WindowSize.Y,

@@ -38,6 +38,10 @@
     <Reference Include="Lidgren.Network">
       <HintPath>..\..\..\Libraries\lidgren-network-gen3\Lidgren.Network\bin\Release\Lidgren.Network.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,17 +53,21 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="ClientCommands.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="ClientEvents.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="NetworkCommands.cs" />
     <Compile Include="Network.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="PlayerEntity.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TrashServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CountryTrash\CountryTrash.csproj">

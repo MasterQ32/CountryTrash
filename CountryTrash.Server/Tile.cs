@@ -22,5 +22,10 @@ namespace CountryTrash
 		public int X => this.x;
 
 		public int Z => this.z;
+
+		internal void Interact(Player player)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

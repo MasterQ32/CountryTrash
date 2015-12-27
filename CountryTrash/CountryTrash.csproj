@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IMap.cs" />
     <Compile Include="InventoryType.cs" />

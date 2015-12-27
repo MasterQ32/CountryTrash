@@ -1,4 +1,5 @@
 ﻿using System;
+using OpenTK;
 
 namespace CountryTrash
 {
@@ -23,9 +24,9 @@ namespace CountryTrash
 
 	public sealed class CreateMapEventArgs : EventArgs
 	{
-		private int id;
-		private int x;
-		private int z;
+		private readonly int id;
+		private readonly int x;
+		private readonly int z;
 
 		public CreateMapEventArgs(int id, int x, int z)
 		{
@@ -41,11 +42,11 @@ namespace CountryTrash
 
 	public sealed class SetTileEventArgs : EventArgs
 	{
-		private float height;
-		private bool interactive;
-		private string model;
-		private int x;
-		private int z;
+		private readonly float height;
+		private readonly bool interactive;
+		private readonly string model;
+		private readonly int x;
+		private readonly int z;
 
 		public SetTileEventArgs(int x, int z, float height, string model, bool interactive)
 		{
@@ -64,19 +65,25 @@ namespace CountryTrash
 		public int Z => this.z;
 	}
 
-	public sealed class CreateEntityEventArgs : EventArgs
+	public sealed class NetworkEntityEventArgs : EventArgs
 	{
+		private readonly int id;
+		private readonly Vector3 pos;
+		private readonly float rotation;
+		private readonly string visualization;
 
-	}
+		public NetworkEntityEventArgs(int id, Vector3 pos, float rotation, string visualization)
+		{
+			this.id = id;
+			this.pos = pos;
+			this.rotation = rotation;
+			this.visualization = visualization;
+		}
 
-	public sealed class UpdateEntityEventArgs : EventArgs
-	{
-
-	}
-
-	public sealed class DestroyEntityEventArgs : EventArgs
-	{
-
+		public int ID => this.id;
+		public Vector3 Position => this.pos;
+		public float Rotation => this.rotation;
+		public string Visualization => this.visualization;
 	}
 
 	public sealed class UpdateInventoryEventArgs : EventArgs

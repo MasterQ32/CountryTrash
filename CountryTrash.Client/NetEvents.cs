@@ -1,5 +1,6 @@
 ﻿using Lidgren.Network;
 using System;
+using System.Collections.Generic;
 
 namespace CountryTrash
 {
@@ -8,46 +9,57 @@ namespace CountryTrash
 		public sealed class NetEvents
 		{
 			private readonly Network network;
+			private readonly Dictionary<ServerToClientNetworkCommand, Action<NetIncomingMessage>> handlers;
 
 			public event EventHandler<AuthenticationResponseEventArgs> AuthenticationResponse;
 			public event EventHandler<CreateMapEventArgs> CreateMap;
 			public event EventHandler<SetTileEventArgs> SetTile;
-			public event EventHandler<CreateEntityEventArgs> CreateEntity;
-			public event EventHandler<UpdateEntityEventArgs> UpdateEntity;
-			public event EventHandler<DestroyEntityEventArgs> DestroyEntity;
+			public event EventHandler<NetworkEntityEventArgs> CreateEntity;
+			public event EventHandler<NetworkEntityEventArgs> UpdateEntity;
+			public event EventHandler<NetworkEntityEventArgs> DestroyEntity;
 			public event EventHandler<UpdateInventoryEventArgs> UpdateInventory;
 
 			public NetEvents(Network network)
 			{
 				this.network = network;
+				this.handlers = new Dictionary<ServerToClientNetworkCommand, Action<NetIncomingMessage>>()
+				{
+					{ ServerToClientNetworkCommand.AuthenticationResponse, OnAuthenticationResponse },
+					{ ServerToClientNetworkCommand.CreateMap, OnCreateMap },
+					{ ServerToClientNetworkCommand.CreateEntity, OnCreateEntity },
+					{ ServerToClientNetworkCommand.SetTile, OnSetTile },
+					{ServerToClientNetworkCommand.UpdateEntity, OnUpdateEntity }
+				};
 			}
 
 			public void Dispatch(NetIncomingMessage msg)
 			{
 				var cmd = (ServerToClientNetworkCommand)msg.ReadByte();
-				switch (cmd)
-				{
-					case ServerToClientNetworkCommand.AuthenticationResponse:
-					{
-						this.OnAuthenticationResponse(msg);
-						break;
-					}
-					case ServerToClientNetworkCommand.CreateMap:
-					{
-						this.OnCreateMap(msg);
-						break;
-					}
-					case ServerToClientNetworkCommand.SetTile:
-					{
-						this.OnSetTile(msg);
-						break;
-					}
-					default:
-					{
-						cmd.Log("Unhandled command {0}", "Network");
-						break;
-					}
-				}
+				if (this.handlers.ContainsKey(cmd))
+					this.handlers[cmd](msg);
+				else
+					cmd.Log("Unhandled command {0}", "Network");
+			}
+
+			private void OnCreateEntity(NetIncomingMessage msg)
+			{
+				var id = msg.ReadInt32();
+				var pos = msg.ReadVector3();
+				var rotation = msg.ReadSingle();
+				var visualization = msg.ReadString();
+
+				if (this.CreateEntity != null)
+					this.CreateEntity(this.network, new NetworkEntityEventArgs(id, pos, rotation, visualization));
+			}
+
+			private void OnUpdateEntity(NetIncomingMessage obj)
+			{
+				var id = obj.ReadInt32();
+				var pos = obj.ReadVector3();
+				var rot = obj.ReadSingle();
+				var vis = obj.ReadString();
+				if (this.UpdateEntity != null)
+					this.UpdateEntity(this.network, new NetworkEntityEventArgs(id, pos, rot, vis));
 			}
 
 			private void OnSetTile(NetIncomingMessage msg)

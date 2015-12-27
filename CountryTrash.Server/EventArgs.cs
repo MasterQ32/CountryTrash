@@ -31,7 +31,17 @@ namespace CountryTrash
 
 	public sealed class InvokeTileActionEventArgs : EventArgs
 	{
+		private readonly int x;
+		private readonly int z;
 
+		public InvokeTileActionEventArgs(int x, int z)
+		{
+			this.x = x;
+			this.z = z;
+		}
+
+		public int X => this.x;
+		public int Z => this.z;
 	}
 
 	public sealed class InvokeEntityAtionEventArgs : EventArgs
