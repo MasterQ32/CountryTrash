@@ -10,6 +10,14 @@ namespace CountryTrash
 
 		public bool IsInteractive { get; set; }
 
+		/// <summary>
+		/// Gets if the tile is blocked for walking.
+		/// </summary>
+		public bool IsBlocked { get; set; }
+
+		/// <summary>
+		/// Gets the name of the tile model
+		/// </summary>
 		public string Model { get; set; } = "/quad";
 
 		public int X { get; set; }

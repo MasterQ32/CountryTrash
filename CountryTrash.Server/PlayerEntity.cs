@@ -24,13 +24,18 @@ namespace CountryTrash
 
 		public void WalkTo(int x, int z)
 		{
-			int xc = (int)Math.Floor(this.Position.X);
-			int xz = (int)Math.Floor(this.Position.Z);
+			int cx = (int)Math.Floor(this.Position.X);
+			int cz = (int)Math.Floor(this.Position.Z);
+
+			var path = PathFinder.FindPath(this.Map, cx, cz, x, z);
 
 			this.walkQueue.Clear();
-			foreach (var node in this.Map.FindPath(xc, xz, x, z))
+			if (path != null)
 			{
-				this.walkQueue.Enqueue(node);
+				foreach (var node in path)
+				{
+					this.walkQueue.Enqueue(node);
+				}
 			}
 		}
 

@@ -32,29 +32,27 @@ namespace CountryTrash
 			}
 		}
 
-		public ITile[] FindPath(int startX, int startZ, int endX, int endZ)
+		/// <summary>
+		/// Gets a tile without boundary checks. If the coordinate is out of bounds, null will be returned;
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="z"></param>
+		/// <returns></returns>
+		public ITile Get(int x, int z)
 		{
-			if ((startX == endX) && (startZ == endZ))
-				return new ITile[0];
-
-			// TODO: Implement correct pathfinding :P
-			var path = new List<ITile>();
-
-			for(int x = startX; x != endX; x += Math.Sign(endX - startX))
-			{
-				path.Add(this[x, startZ]);
-			}
-			path.Add(this[endX, startZ]);
-
-			for (int z = startZ; z != endZ; z += Math.Sign(endZ - startZ))
-			{
-				path.Add(this[endX, z]);
-			}
-			path.Add(this[endX, endZ]);
-
-			return path.ToArray();
+			if ((x < 0) || (z < 0))
+				return null;
+			if ((x >= this.SizeX) || (z >= this.SizeZ))
+				return null;
+			return this.tiles[x, z];
 		}
 
+		/// <summary>
+		/// Gets or sets a tile with boundary checks
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="z"></param>
+		/// <returns></returns>
 		public ITile this[int x, int z]
 		{
 			get { return this.tiles[x, z]; }

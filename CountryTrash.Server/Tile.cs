@@ -15,6 +15,8 @@ namespace CountryTrash
 
 		public float Height { get; set; }
 
+		public bool IsBlocked { get; set; }
+
 		public bool IsInteractive { get; set; }
 
 		public string Model { get; set; }

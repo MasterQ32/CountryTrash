@@ -35,5 +35,10 @@ namespace CountryTrash
 		/// Gets if the tile is interactive and the user can click it.
 		/// </summary>
 		bool IsInteractive { get; }
+
+		/// <summary>
+		/// Gets if the tile is blocked for walking.
+		/// </summary>
+		bool IsBlocked { get; }
 	}
 }
