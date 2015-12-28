@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using OpenTK;
 
 namespace CountryTrash
 {
-	public sealed class Map : IMap, IEnumerable<ITile>, IUpdateable
+	public sealed class Map : IMap, IEnumerable<ITile>, IUpdateable, ITicking
 	{
 		private readonly int id;
 		private readonly ITile[,] tiles;
@@ -21,22 +22,36 @@ namespace CountryTrash
 		}
 
 		private List<Tuple<IEntity, EntityProperty>> changedEntities = new List<Tuple<IEntity, EntityProperty>>();
+		private List<Vector2> changedTiles = new List<Vector2>();
 
 		public void Update(float dt)
 		{
+			// First, update all tiles
 			foreach (var tile in this.OfType<IUpdateable>())
 			{
 				tile.Update(dt);
 			}
+
+			// Then, update all entities
 			foreach (var entity in this.Entities.OfType<IUpdateable>())
 			{
 				entity.Update(dt);
 			}
 
+			// Send all tile update messages
+			{
+				foreach(var pos in this.changedTiles.Distinct())
+				{
+					var x = (int)pos.X;
+					var z = (int)pos.Y;
+					this.InvokeAll(cl => cl.Commands.SetTile(this.tiles[x, z]));
+				}
+			}
+
 			// Send all entity update messages
 			{
 				this.changedEntities.Reverse();
-				
+
 				// Get all entities which have their visualization property changed.
 				var forcedUpdate = this.changedEntities.Where(e => (e.Item2 == EntityProperty.Visualization)).Select(e => e.Item1).Distinct();
 				foreach (var ce in forcedUpdate)
@@ -77,7 +92,15 @@ namespace CountryTrash
 		public ITile this[int x, int z]
 		{
 			get { return this.tiles[x, z]; }
-			set { this.tiles[x, z] = value; }
+			set
+			{
+				if (this.tiles[x, z] == value)
+					return;
+				//if (value == null)
+				//	throw new InvalidOperationException("Null tiles are only allowed for initial configuration");
+				this.tiles[x, z] = value;
+				this.OnTileChanged(x, z, value);
+			}
 		}
 
 		public IReadOnlyCollection<IEntity> Entities => this.entities;
@@ -94,6 +117,21 @@ namespace CountryTrash
 		{
 			foreach (var player in this.players)
 				invoker(player.Client);
+		}
+
+		private void OnTileChanged(int x, int z, ITile value)
+		{
+			if(value == null)
+			{
+				this.tiles[x, z] = new Tile(this, x, z)
+				{
+					IsBlocked = true,
+					Model = null,
+					Topping = null,
+					IsInteractive = false
+				};
+			}
+			this.changedTiles.Add(new Vector2(x, z));
 		}
 
 		public void AddEntity(IEntity entity)
@@ -117,6 +155,7 @@ namespace CountryTrash
 
 		private void Entity_Changed(object sender, EntityChangedEventArgs e)
 		{
+			// The event will be handled at the end of the frame.
 			var entity = (Entity)sender;
 			this.changedEntities.Add(new Tuple<IEntity, EntityProperty>(entity, e.Property));
 		}
@@ -165,5 +204,14 @@ namespace CountryTrash
 		public IEnumerator<ITile> GetEnumerator() => this.tiles.OfType<ITile>().GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+		/// <summary>
+		/// Ticks all tiles
+		/// </summary>
+		public void Tick()
+		{
+			foreach (var tile in this.tiles.OfType<ITicking>())
+				tile.Tick();
+		}
 	}
 }

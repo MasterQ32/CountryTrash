@@ -13,12 +13,12 @@ namespace CountryTrash
 		public PlayerEntity(Player player)
 		{
 			this.player = player;
-			this.Visualization = "/Models/quad";
+			this.Visualization = "/Models/crappy-char";
 		}
 
 		public void Teleport(float x, float z)
 		{
-			this.Position = new Vector3(x, GetHeight(x, z) + 0.5f, z);
+			this.Position = new Vector3(x, GetHeight(x, z), z);
 			this.targetPosition = this.Position;
 		}
 
@@ -47,11 +47,11 @@ namespace CountryTrash
 				var previousTargetPosition = this.targetPosition;
 
 				var target = this.walkQueue.Dequeue();
-				
+
 				// TODO: Think about attending blocked end tiles
 				if (target.IsBlocked == false)
 				{
-					this.targetPosition = new Vector3(target.X, GetHeight(target.X, target.Z) + 0.5f, target.Z);
+					this.targetPosition = new Vector3(target.X, GetHeight(target.X, target.Z), target.Z);
 
 					// If target is blocked, don't walk on the target tile but walk close to it.
 					if (target.IsBlocked)
@@ -59,11 +59,16 @@ namespace CountryTrash
 						this.targetPosition = Vector3.Lerp(previousTargetPosition, this.targetPosition, 0.4f);
 					}
 				}
+				else
+				{
+					this.LookAt(target.X, target.Z);
+				}
 
 				dist = (this.targetPosition - this.Position);
 			}
 			if (dist.Length > 0)
 			{
+				this.LookAt(this.targetPosition.X, this.targetPosition.Z);
 				if (dist.Length > dt)
 				{
 					dist = dt * dist.Normalized();
@@ -71,6 +76,18 @@ namespace CountryTrash
 				this.Position += dist;
 			}
 		}
+
+		public void LookAt(float px, float pz)
+		{
+			float x = px - this.Position.X;
+			float z = pz - this.Position.Z;
+			
+			this.Rotation = (float)Math.Atan2(-z, x) + MathHelper.PiOver2;
+		}
+
+		public bool HasReachedTarget => (this.walkQueue.Count == 0) && ((this.Position - this.targetPosition).Length < 0.1f);
+
+		public bool IsWalking => (this.walkQueue.Count > 0) || (!this.HasReachedTarget);
 
 		private float GetHeight(float fx, float fz)
 		{

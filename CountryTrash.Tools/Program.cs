@@ -13,9 +13,11 @@ namespace CountryTrash.Tools
 	{
 		static void Main(string[] args)
 		{
+			string name = "crappy-char";
+
 			AssimpContext context = new AssimpContext();
 			var scene = context.ImportFile(
-				@"C:\Users\Felix\Desktop\Models\boulder.obj",
+				@"C:\Users\Felix\Desktop\Models\" + name + ".obj",
 				PostProcessSteps.PreTransformVertices |
 				PostProcessSteps.GenerateNormals |
 				PostProcessSteps.JoinIdenticalVertices |
@@ -63,7 +65,7 @@ namespace CountryTrash.Tools
 			model.Indices = indices.ToArray();
 			model.Vertices = vertices.ToArray();
 
-			using (var fs = File.Open(@"C:\Users\Felix\Desktop\Models\boulder.xml", FileMode.Create, FileAccess.Write))
+			using (var fs = File.Open(@"C:\Users\Felix\Desktop\Models\" + name + ".mesh", FileMode.Create, FileAccess.Write))
 			{
 				model.Save(fs);
 			}

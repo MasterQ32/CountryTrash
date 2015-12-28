@@ -51,11 +51,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChangeTileTask.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientCommands.cs" />
+    <Compile Include="DirtTile.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="ClientEvents.cs" />
+    <Compile Include="GrasTile.cs" />
+    <Compile Include="ITicking.cs" />
     <Compile Include="IUpdateable.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="NetworkCommands.cs" />
@@ -63,9 +67,11 @@
     <Compile Include="PathFinder.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayerEntity.cs" />
+    <Compile Include="PlayerTask.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TrashServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WalkTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

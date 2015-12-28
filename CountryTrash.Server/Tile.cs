@@ -2,15 +2,37 @@
 
 namespace CountryTrash
 {
-	internal class Tile : ITile
+	public class Tile : ITile
 	{
+		private readonly Map map;
 		private readonly int x;
 		private readonly int z;
 
-		public Tile(int x, int z)
+		public Tile(Map map, int x, int z)
 		{
+			if (map == null)
+				throw new ArgumentNullException("map");
+			this.map = map;
+
+			if ((x < 0) || (x >= this.map.SizeX))
+				throw new ArgumentOutOfRangeException("x");
+
+			if ((z < 0) || (z >= this.map.SizeZ))
+				throw new ArgumentOutOfRangeException("z");
+
 			this.x = x;
 			this.z = z;
+		}
+
+		/// <summary>
+		/// Copies a tile except for IsBlocked, IsInteractive and Topping.
+		/// </summary>
+		/// <param name="other"></param>
+		public Tile(Tile other) : 
+			this(other.Map, other.X, other.Z)
+		{
+			this.Height = other.Height;
+			this.Model = other.Model;
 		}
 
 		public float Height { get; set; }
@@ -26,9 +48,12 @@ namespace CountryTrash
 
 		public int Z => this.z;
 
-		internal void Interact(Player player)
+		public Map Map => this.map;
+
+		public virtual void Interact(Player player)
 		{
-			throw new NotImplementedException();
+			// Default behaviour for tiles: Walk to the tile
+			player.AddTask(new WalkTask(this.X, this.Z));
 		}
 	}
 }

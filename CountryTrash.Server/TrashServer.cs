@@ -11,6 +11,10 @@ namespace CountryTrash
 {
 	class TrashServer
 	{
+		private static readonly ThreadLocal<Random> rng = new ThreadLocal<System.Random>(() => new Random());
+
+		public static Random Random => rng.Value;
+
 		static void Main(string[] args)
 		{
 			var server = new TrashServer();
@@ -22,7 +26,7 @@ namespace CountryTrash
 
 		private readonly Dictionary<int, Map> maps = new Dictionary<int, Map>()
 		{
-			{ 1, new Map(1, 6, 6) }
+			{ 1, new Map(1, 8, 6) }
 		};
 
 		private readonly HashSet<Player> players = new HashSet<Player>();
@@ -35,10 +39,17 @@ namespace CountryTrash
 				{
 					for (int x = 0; x < map.SizeX; x++)
 					{
-						map[x, z] = new Tile(x, z)
+						if (x >= 6)
 						{
-							Model = "/Models/tile"
-						};
+							map[x, z] = new DirtTile(map, x, z);
+						}
+						else
+						{
+							map[x, z] = new Tile(map, x, z)
+							{
+								Model = "/Models/tile-path"
+							};
+						}
 					}
 				}
 				map[1, 1] = null;
@@ -50,9 +61,9 @@ namespace CountryTrash
 				map[3, 4] = null;
 				map[4, 3] = null;
 
-				map[3, 1] = new Tile(3, 1)
+				map[3, 1] = new Tile(map, 3, 1)
 				{
-					Model = "/Models/tile",
+					Model = "/Models/tile-path",
 					Topping = "/Models/boulder",
 					IsBlocked = true
 				};
@@ -78,16 +89,31 @@ namespace CountryTrash
 			network.ClientDisconnected += (s, e) =>
 			{
 				e.Client.Events.Authenticate -= AuthenticateClient;
+				this.players.Remove(e.Client.Player);
 			};
 
 			var watch = Stopwatch.StartNew();
 			var rate = 1.0f / 30.0f; // Server runs with 30 FPS
+			var tickRate = 1.0f / 10.0f; // Server ticks with 10 FPS
+			var tickTimer = 0.0f;
 			while (true)
 			{
 				watch.Reset();
 				network.ReceiveMessages();
 
 				this.SpawnClients();
+
+				while(tickTimer >= tickRate)
+				{
+					// First tick the map so the tiles will be ready for the player tasks.
+					foreach (var map in this.maps.Values)
+						map.Tick();
+
+					// Then tick the players so they can finish their tasks.
+					foreach (var player in this.players)
+						player.Tick();
+					tickTimer -= tickRate;
+				}
 				
 				foreach(var map in this.maps.Values)
 				{
@@ -98,6 +124,8 @@ namespace CountryTrash
 
 				int time = (int)Math.Max(0, 1000 * rate - watch.ElapsedMilliseconds);
 				Thread.Sleep(time);
+
+				tickTimer += rate;
 			}
 		}
 
@@ -113,6 +141,8 @@ namespace CountryTrash
 				var map = this.maps[lastMap];
 
 				map.AddPlayer(player);
+
+				this.players.Add(player);
 			}
 		}
 

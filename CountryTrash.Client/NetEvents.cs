@@ -79,8 +79,16 @@ namespace CountryTrash
 				var model = msg.ReadString();
 				var topping = msg.ReadString();
 				var interactive = msg.ReadBoolean();
+
+				var ea = new SetTileEventArgs(
+					x, z, 
+					height,
+					string.IsNullOrWhiteSpace(model) ? null : model, 
+					string.IsNullOrWhiteSpace(topping) ? null : topping, 
+					interactive);
+
 				if (this.SetTile != null)
-					this.SetTile(this.network, new SetTileEventArgs(x, z, height, model, string.IsNullOrWhiteSpace(topping) ? null :  topping, interactive));
+					this.SetTile(this.network, ea);
 			}
 
 			private void OnCreateMap(NetIncomingMessage msg)

@@ -8,7 +8,7 @@ namespace CountryTrash.Graphics
 {
 	public sealed class ResourceManager
 	{
-		private static readonly Regex pathSpecifier = new Regex(@"^(?<path>\/(?:\w+\/)*)(?<file>\w+)$", RegexOptions.Compiled);
+		private static readonly Regex pathSpecifier = new Regex(@"^(?<path>\/(?:[A-Za-z0-9_-]+\/)*)(?<file>[A-Za-z0-9_-]+)$", RegexOptions.Compiled);
 
 		private readonly Dictionary<string, Resource> resources = new Dictionary<string, Resource>();
 		private readonly string root;

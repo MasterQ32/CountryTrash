@@ -4,7 +4,7 @@ using System;
 namespace CountryTrash
 {
 	partial class Client
-	{ 
+	{
 		public class ClientCommands
 		{
 			private readonly Client client;
