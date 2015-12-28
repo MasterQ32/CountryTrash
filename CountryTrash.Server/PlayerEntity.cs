@@ -44,9 +44,21 @@ namespace CountryTrash
 			var dist = (this.targetPosition - this.Position);
 			if ((dist.Length == 0) && (this.walkQueue.Count > 0))
 			{
+				var previousTargetPosition = this.targetPosition;
+
 				var target = this.walkQueue.Dequeue();
-				while (target == null) target = this.walkQueue.Dequeue(); // HACK: For non-working path finding
-				this.targetPosition = new Vector3(target.X, GetHeight(target.X, target.Z) + 0.5f, target.Z);
+				
+				// TODO: Think about attending blocked end tiles
+				if (target.IsBlocked == false)
+				{
+					this.targetPosition = new Vector3(target.X, GetHeight(target.X, target.Z) + 0.5f, target.Z);
+
+					// If target is blocked, don't walk on the target tile but walk close to it.
+					if (target.IsBlocked)
+					{
+						this.targetPosition = Vector3.Lerp(previousTargetPosition, this.targetPosition, 0.4f);
+					}
+				}
 
 				dist = (this.targetPosition - this.Position);
 			}

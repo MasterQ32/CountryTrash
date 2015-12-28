@@ -17,16 +17,24 @@ namespace CountryTrash
 		/// <param name="ex"></param>
 		/// <param name="ez"></param>
 		/// <returns></returns>
+		/// <remarks>Special case: The last tile is allowed to be a blocked tile, so the player is able to focus it.</remarks>
 		public static ITile[] FindPath(Map map, int sx, int sz, int ex, int ez)
 		{
 			if ((sx == ex) && (sz == ez))
 				return new ITile[0];
 
-			if (map[sx, sz] == null)
-				throw new InvalidOperationException("Cannot find path with empty start point.");
+			// empt start is not allowed
+			if (map[sx, sz] == null) 
+				return null;
 
+			// blocked start is not allowed
+			if (map[sx, sz].IsBlocked)
+				return null;
+
+			// empty end is not allowed
 			if (map[ex, ez] == null)
-				throw new InvalidOperationException("Cannot find path with empty end point.");
+				return null;
+			
 
 			var closedList = new HashSet<Node>();
 			var openList = new Queue<Node>();
@@ -64,7 +72,7 @@ namespace CountryTrash
 					var node = new Node(neighbour, current);
 					if (closedList.Contains(node))
 						continue;
-					if (neighbour.IsBlocked)
+					if (neighbour.IsBlocked && ((neighbour.X != ex) || (neighbour.Z != ez)))
 						continue;
 
 					closedList.Add(node);

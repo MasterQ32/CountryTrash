@@ -12,7 +12,7 @@ namespace CountryTrash
 		private readonly HashSet<IEntity> entities;
 
 		private HashSet<Player> players = new HashSet<Player>();
-		
+
 		public Map(int id, int sizeX, int sizeZ)
 		{
 			this.id = id;
@@ -20,15 +20,36 @@ namespace CountryTrash
 			this.entities = new HashSet<IEntity>();
 		}
 
+		private List<Tuple<IEntity, EntityProperty>> changedEntities = new List<Tuple<IEntity, EntityProperty>>();
+
 		public void Update(float dt)
 		{
-			foreach(var tile in this.OfType<IUpdateable>())
+			foreach (var tile in this.OfType<IUpdateable>())
 			{
 				tile.Update(dt);
 			}
 			foreach (var entity in this.Entities.OfType<IUpdateable>())
 			{
 				entity.Update(dt);
+			}
+
+			// Send all entity update messages
+			{
+				this.changedEntities.Reverse();
+				
+				// Get all entities which have their visualization property changed.
+				var forcedUpdate = this.changedEntities.Where(e => (e.Item2 == EntityProperty.Visualization)).Select(e => e.Item1).Distinct();
+				foreach (var ce in forcedUpdate)
+				{
+					this.InvokeAll(cl => cl.Commands.UpdateEntity(ce, true));
+				}
+
+				// Now get all entities that have something else changed
+				var maybeUpdate = this.changedEntities.Select(e => e.Item1).Except(forcedUpdate).Distinct();
+				foreach (var ce in maybeUpdate)
+				{
+					this.InvokeAll(cl => cl.Commands.UpdateEntity(ce, false));
+				}
 			}
 		}
 
@@ -97,8 +118,7 @@ namespace CountryTrash
 		private void Entity_Changed(object sender, EntityChangedEventArgs e)
 		{
 			var entity = (Entity)sender;
-
-			this.InvokeAll(cl => cl.Commands.UpdateEntity(entity, (e.Property == EntityProperty.Visualization)));
+			this.changedEntities.Add(new Tuple<IEntity, EntityProperty>(entity, e.Property));
 		}
 
 		public void RemoveEntity(IEntity entity)
@@ -110,7 +130,9 @@ namespace CountryTrash
 			// Remove the entity from the map
 			if (entity is Entity)
 				((Entity)entity).Map = null;
-			
+
+			this.changedEntities.RemoveAll(e => (e.Item1 == entity));
+
 			this.InvokeAll(cl => cl.Commands.DestroyEntity(entity));
 		}
 
@@ -118,7 +140,7 @@ namespace CountryTrash
 		{
 			player.Map?.RemovePlayer(player);
 			this.AddEntity(player.Entity);
-			
+
 			player.Client.Commands.CreateMap(this);
 			foreach (var tile in this)
 			{
@@ -128,7 +150,7 @@ namespace CountryTrash
 			{
 				player.Client.Commands.CreateEntity(entity);
 			}
-			
+
 			this.players.Add(player);
 			player.Map = this;
 		}
