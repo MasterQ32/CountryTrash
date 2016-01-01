@@ -74,7 +74,10 @@ namespace CountryTrash
 			}
 			task.Tick();
 			if (task.IsFinished)
+			{ 
+				this.client.Commands.DequeueTask(task);
 				this.tasks.Dequeue();
+			}
 		}
 
 		/// <summary>
@@ -87,6 +90,7 @@ namespace CountryTrash
 				throw new ArgumentNullException("task");
 			task.player = this;
 			this.tasks.Enqueue(task);
+			this.client.Commands.EnqueueTask(task);
 		}
 
 		public string Name => this.name;

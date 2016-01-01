@@ -9,5 +9,9 @@ namespace CountryTrash.Graphics
 		Vector2 Size { get; }
 
 		string Texture { get; }
+
+		Font Font { get; }
+
+		string Text { get; }
 	}
 }

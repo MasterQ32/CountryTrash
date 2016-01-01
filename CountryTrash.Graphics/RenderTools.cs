@@ -13,6 +13,7 @@ namespace CountryTrash.Graphics
 	public static class RenderTools
 	{
 		public static string UIShader { get; set; } = "/Shaders/ui";
+		public static string FontShader { get; set; } = "/Shaders/font";
 		public static string UISprite { get; set; } = "/Models/widget";
 
 		public static void RenderUI(
@@ -25,10 +26,16 @@ namespace CountryTrash.Graphics
   				-(screenHeight - 1.0f), 0.0f,
 				0.0f, 1.0f);
 
-			var shader = resources.Get<ShaderProgram>(UIShader);
-			shader.Bind();
-			GL.Uniform1(shader["texInterface"], 0);
-			GL.UniformMatrix4(shader["matScreen"], false, ref transformScreen);
+			var uishader = resources.Get<ShaderProgram>(UIShader);
+			uishader.Bind();
+			GL.Uniform1(uishader["texInterface"], 0);
+			GL.UniformMatrix4(uishader["matScreen"], false, ref transformScreen);
+
+			var fontshader = resources.Get<ShaderProgram>(FontShader);
+			fontshader.Bind();
+			GL.Uniform1(fontshader["texInterface"], 0);
+			GL.UniformMatrix4(fontshader["matScreen"], false, ref transformScreen);
+
 
 			var model = resources.Get<Model>(UISprite);
 
@@ -36,21 +43,58 @@ namespace CountryTrash.Graphics
 			{
 				if (element == null)
 					continue;
-				var transformModel =
-					Matrix4.CreateScale(element.Size.X, -element.Size.Y, 1.0f) *
-					Matrix4.CreateTranslation(element.Position.X, -element.Position.Y, 0);
-
-				GL.UniformMatrix4(shader["matModel"], false, ref transformModel);
 
 				GL.ActiveTexture(TextureUnit.Texture0);
-				if (resources.Exist<Texture2D>(element.Texture))
+				if (string.IsNullOrWhiteSpace(element.Texture) == false)
 				{
-					var texture = resources.Get<Texture2D>(element.Texture);
-					texture.Bind();
+					var transformModel =
+						Matrix4.CreateScale(element.Size.X, -element.Size.Y, 1.0f) *
+						Matrix4.CreateTranslation(element.Position.X, -element.Position.Y, 0);
 
-					foreach (var mesh in model.Meshes)
+					uishader.Bind();
+					GL.UniformMatrix4(uishader["matModel"], false, ref transformModel);
+
+					if (resources.Exist<Texture2D>(element.Texture))
 					{
-						model.DrawMesh(mesh);
+						resources.Get<Texture2D>(element.Texture).Bind();
+						foreach (var mesh in model.Meshes)
+						{
+							model.DrawMesh(mesh);
+						}
+					}
+				}
+
+				if((element.Font != null) && (string.IsNullOrWhiteSpace(element.Text) == false))
+				{
+					var font = element.Font;
+					var offset = Vector2.Zero;
+					offset.Y = font.Size;
+
+					fontshader.Bind();
+
+					foreach (var c in element.Text)
+					{
+						font.LoadChar(c);
+
+						var glyph = font.Glyph;
+						
+						var transformModel =
+							Matrix4.CreateScale(glyph.Bitmap.Width, -glyph.Bitmap.Rows, 1.0f) *
+							Matrix4.CreateTranslation(
+								element.Position.X + offset.X + glyph.BitmapLeft, 
+								-element.Position.Y - offset.Y + glyph.BitmapTop, 
+								0);
+
+						GL.UniformMatrix4(fontshader["matModel"], false, ref transformModel);
+
+						font.Bind();
+						foreach (var mesh in model.Meshes)
+						{
+							model.DrawMesh(mesh);
+						}
+
+						offset.X += glyph.Advance.X.ToSingle();
+						offset.Y += glyph.Advance.Y.ToSingle();
 					}
 				}
 			}

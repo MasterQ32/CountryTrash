@@ -93,4 +93,18 @@ namespace CountryTrash
 	{
 
 	}
+
+	public sealed class TaskEventArgs : EventArgs
+	{
+		public TaskEventArgs(int id, string title, string icon)
+		{
+			this.ID = id;
+			this.Title = title;
+			this.Icon = icon;
+		}
+
+		public string Icon { get; private set; }
+		public int ID { get; private set; }
+		public string Title { get; private set; }
+	}
 }

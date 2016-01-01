@@ -9,6 +9,8 @@
 		public ChangeTileTask(Tile target)
 		{
 			this.target = target;
+			this.Icon = "/Textures/Icons/shovel";
+			this.Title = "Dig";
 		}
 
 		public override bool IsFinished => this.isFinished;

@@ -19,6 +19,8 @@ namespace CountryTrash
 			public event EventHandler<NetworkEntityEventArgs> UpdateEntity;
 			public event EventHandler<NetworkEntityEventArgs> DestroyEntity;
 			public event EventHandler<UpdateInventoryEventArgs> UpdateInventory;
+			public event EventHandler<TaskEventArgs> EnqueueTask;
+			public event EventHandler<TaskEventArgs> DequeueTask;
 
 			public NetEvents(Network network)
 			{
@@ -30,8 +32,26 @@ namespace CountryTrash
 					{ ServerToClientNetworkCommand.CreateEntity, OnCreateEntity },
 					{ ServerToClientNetworkCommand.SetTile, OnSetTile },
 					{ServerToClientNetworkCommand.UpdateEntity, OnUpdateEntity },
-					{ServerToClientNetworkCommand.DestroyEntity, OnDestroyEntity }
+					{ServerToClientNetworkCommand.DestroyEntity, OnDestroyEntity },
+					{ServerToClientNetworkCommand.EnqueueTask, OnEnqueueTask},
+					{ServerToClientNetworkCommand.DequeueTask, OnDequeueTask}
 				};
+			}
+
+			private void OnDequeueTask(NetIncomingMessage msg)
+			{
+				var id = msg.ReadInt32();
+				if (this.DequeueTask != null)
+					this.DequeueTask(this.network, new TaskEventArgs(id, null, null));
+			}
+
+			private void OnEnqueueTask(NetIncomingMessage msg)
+			{
+				var id = msg.ReadInt32();
+				var title = msg.ReadString();
+				var icon = msg.ReadString();
+				if (this.EnqueueTask != null)
+					this.EnqueueTask(this.network, new TaskEventArgs(id, title.Nullify(), icon.Nullify()));
 			}
 
 			public void Dispatch(NetIncomingMessage msg)

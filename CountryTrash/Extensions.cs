@@ -10,6 +10,13 @@ namespace CountryTrash
 {
 	public static class sExtensions
 	{
+		public static string Nullify(this string text)
+		{
+			if (string.IsNullOrWhiteSpace(text))
+				return null;
+			return text;
+		}
+
 		public static void Write(this NetOutgoingMessage msg, Vector2 vec)
 		{
 			msg.Write(vec.X);

@@ -62,7 +62,6 @@
     <Compile Include="ITicking.cs" />
     <Compile Include="IUpdateable.cs" />
     <Compile Include="Map.cs" />
-    <Compile Include="NetworkCommands.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="PathFinder.cs" />
     <Compile Include="Player.cs" />

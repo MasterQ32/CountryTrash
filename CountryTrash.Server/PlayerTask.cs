@@ -1,13 +1,23 @@
-﻿namespace CountryTrash
+﻿using System;
+using System.Threading;
+
+namespace CountryTrash
 {
 	/// <summary>
 	/// A task that can be done by a player.
 	/// </summary>
-	public abstract class PlayerTask
+	public abstract class PlayerTask : ITask
 	{
-		internal Player player;
+		private static int idCounter = 0;
 
-		protected PlayerTask() { }
+		internal Player player;
+		private readonly int id;
+
+		protected PlayerTask()
+		{
+			this.id = Interlocked.Increment(ref idCounter);
+			this.Title = this.GetType().Name;
+		}
 
 		/// <summary>
 		/// Starts the task after it has been assigned to a player.
@@ -25,5 +35,11 @@
 		public abstract bool IsFinished { get; }
 
 		public Player Player => this.player;
+
+		public int ID => this.id;
+
+		public string Title { get; set; }
+
+		public string Icon { get; set; }
 	}
 }

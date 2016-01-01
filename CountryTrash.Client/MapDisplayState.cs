@@ -3,6 +3,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CountryTrash
@@ -18,6 +19,8 @@ namespace CountryTrash
 
 		Entity helper;
 
+		readonly List<Task> tasks = new List<Task>();
+
 		public MapDisplayState(Network network)
 		{
 			this.network = network;
@@ -25,8 +28,25 @@ namespace CountryTrash
 			this.network.Events.SetTile += SetTile;
 			this.network.Events.CreateEntity += CreateEntity;
 			this.network.Events.UpdateEntity += UpdateEntity;
+			this.network.Events.EnqueueTask += EnqueueTask;
+			this.network.Events.DequeueTask += DequeueTask;
 
 			this.ui = new UserInterface();
+		}
+
+		private void DequeueTask(object sender, TaskEventArgs e)
+		{
+			this.tasks.RemoveAll(t => (t.ID == e.ID));
+		}
+
+		private void EnqueueTask(object sender, TaskEventArgs e)
+		{
+			this.tasks.Add(new Task()
+			{
+				ID = e.ID,
+				Icon = e.Icon,
+				Title = e.Title
+			});
 		}
 
 		private void CreateEntity(object sender, NetworkEntityEventArgs e)
@@ -85,7 +105,7 @@ namespace CountryTrash
 
 		private void Mouse_ButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			switch(e.Button)
+			switch (e.Button)
 			{
 				case MouseButton.Left:
 				{
@@ -161,6 +181,31 @@ namespace CountryTrash
 				this.Resources,
 				this.WindowSize.X, this.WindowSize.Y,
 				this.ui);
+
+			var tasklist = this.tasks.SelectMany((t, i) => new[] {
+				new Widget()
+				{
+					Position = new Vector2(16, 16 + 32 * i),
+					Size = new Vector2(128, 32),
+					Texture = "/Textures/task"
+				},
+				new Widget()
+				{
+					Position = new Vector2(16, 16 + 32 * i),
+					Size = new Vector2(32, 32),
+					Texture = t.Icon ?? "/Textures/Icons/unknown"
+				},
+				new Widget()
+				{
+					Position = new Vector2(16 + 32 + 4, 16 + 32 * i + 2),
+					Text = t.Title,
+					Font = Resources.Get<Font>("/Fonts/steelfish")
+				}
+			});
+			RenderTools.RenderUI(
+				this.Resources,
+				this.WindowSize.X, this.WindowSize.Y,
+				tasklist);
 		}
 	}
 }

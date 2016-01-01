@@ -89,5 +89,15 @@
 		/// Updates an inventory slot.
 		/// </summary>
 		UpdateInventory,
+
+		/// <summary>
+		/// Enqueues a task in the players task list.
+		/// </summary>
+		EnqueueTask,
+
+		/// <summary>
+		/// Dequeues a task in the players task list.
+		/// </summary>
+		DequeueTask,
 	}
 }

@@ -90,6 +90,26 @@ namespace CountryTrash
 				msg.Write(map.SizeZ);
 				SendMessage(msg);
 			}
+
+			public void EnqueueTask(ITask task)
+			{
+				if (task == null)
+					throw new ArgumentNullException(nameof(task));
+				var msg = CreateMessage(ServerToClientNetworkCommand.EnqueueTask);
+				msg.Write(task.ID);
+				msg.Write(task.Title);
+				msg.Write(task.Icon);
+				SendMessage(msg);
+			}
+
+			public void DequeueTask(ITask task)
+			{
+				if (task == null)
+					throw new ArgumentNullException(nameof(task));
+				var msg = CreateMessage(ServerToClientNetworkCommand.DequeueTask);
+				msg.Write(task.ID);
+				SendMessage(msg);
+			}
 		}
 	}
 }

@@ -11,6 +11,8 @@ namespace CountryTrash
 		{
 			this.x = x;
 			this.z = z;
+			this.Title = $"Walk ({x},{z})";
+			this.Icon = "/Textures/Icons/foot";
 		}
 
 		public override bool IsFinished

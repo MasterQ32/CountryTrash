@@ -53,6 +53,7 @@
     <Compile Include="IEntity.cs" />
     <Compile Include="IMap.cs" />
     <Compile Include="InventoryType.cs" />
+    <Compile Include="ITask.cs" />
     <Compile Include="ITile.cs" />
     <Compile Include="IVisualObject.cs" />
     <Compile Include="Logger.cs" />
